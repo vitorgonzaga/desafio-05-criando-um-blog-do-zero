@@ -1,0 +1,22 @@
+.info {
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+
+    time {
+        margin-left: 0.5rem;
+    }
+
+    span {
+        margin-left: 0.5rem;
+    }
+
+    div {
+        display: flex;
+        align-items: center;
+
+        time {
+            margin-right: 24px;
+        }
+    }
+}
