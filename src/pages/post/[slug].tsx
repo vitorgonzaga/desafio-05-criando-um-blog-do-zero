@@ -34,9 +34,9 @@ export default function Post({ post }: PostProps): JSX.Element {
   const router = useRouter();
 
   const words = Math.ceil(
-    post.data.content.reduce((acc, curr) => {
-      const headingWords = curr?.heading.split(' ').length;
-      const bodyWords = RichText.asText(curr?.body).split(' ').length;
+    post?.data?.content?.reduce((acc, curr) => {
+      const headingWords = curr?.heading?.split(' ')?.length || 0;
+      const bodyWords = RichText.asText(curr?.body)?.split(' ')?.length || 0;
       return acc + headingWords + bodyWords;
     }, 0) / 200
   );
@@ -96,7 +96,9 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const post = {
     first_publication_date: response.first_publication_date,
+    uid: response.uid,
     data: {
+      subtitle: response.data.subtitle,
       title: response.data.title,
       banner: {
         url: response.data.banner.url,
