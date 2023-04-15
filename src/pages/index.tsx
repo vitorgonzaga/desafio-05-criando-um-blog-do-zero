@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
-import { GetStaticProps } from 'next';
-
 import ptBR from 'date-fns/locale/pt-BR';
+import { GetStaticProps } from 'next';
+import Link from 'next/link';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import { getPrismicClient } from '../services/prismic';
 
@@ -35,7 +35,9 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
     <main className={styles.contentContainer}>
       {postsPagination.results.map(post => (
         <div key={post.uid} className={styles.post}>
-          <a href="#">{post.data.title}</a>
+          <Link href={`/posts/${post.uid}`}>
+            <h1>{post.data.title}</h1>
+          </Link>
           <p>{post.data.subtitle}</p>
           <div className={styles.info}>
             <div>
