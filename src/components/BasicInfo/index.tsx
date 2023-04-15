@@ -15,22 +15,6 @@ export default function BasicInfo({
   author,
   minutes,
 }: BasicInfoProps): JSX.Element {
-  //   const [time, setTime] = useState(0);
-
-  //   const calculateTime = (): number => {
-  //     if (minutes > 60) {
-  //       return minutes / 60;
-  //     }
-  //     if (minutes === 60) {
-  //       return 1;
-  //     }
-  //     return minutes;
-  //   };
-
-  //   useEffect(() => {
-  //     setTime(calculateTime());
-  //   }, [minutes]);
-
   return (
     <>
       <div className={styles.info}>

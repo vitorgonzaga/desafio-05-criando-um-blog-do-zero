@@ -5,8 +5,6 @@ import { getPrismicClient } from '../services/prismic';
 
 import BasicInfo from '../components/BasicInfo';
 import styles from './home.module.scss';
-// import commonStyles from '../styles/common.module.scss';
-// import { hrefResolver, linkResolver } from 'prismic-configuration';
 
 interface Post {
   uid?: string;
@@ -28,19 +26,18 @@ interface HomeProps {
 }
 
 export default function Home({ postsPagination }: HomeProps): JSX.Element {
-  // eslint-disable-next-line no-console
-  console.log('Home -> postsPagination:', postsPagination.results[0]);
-  const [repository, setRepository] = useState([]);
+  const [repository, setRepository] = useState({} as PostPagination);
 
   useEffect(() => {
-    setRepository(postsPagination.results);
+    setRepository(postsPagination);
   }, [postsPagination]);
 
   const fetchMorePosts = (next_page: string): void => {
     fetch(next_page)
       .then(resp => resp.json())
       .then(data => {
-        const result = data.results.map(post => {
+        const nextPage = data.next_page;
+        const results = data.results.map(post => {
           return {
             uid: post.uid,
             first_publication_date: post.first_publication_date,
@@ -51,13 +48,16 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
             },
           };
         });
-        setRepository(result);
+        setRepository({
+          next_page: nextPage,
+          results: [...results],
+        });
       });
   };
 
   return (
     <main className={styles.contentContainer}>
-      {repository.map(post => (
+      {repository?.results?.map(post => (
         <div key={post.uid} className={styles.post}>
           <Link href={`/post/${post.uid}`}>
             <h1>{post.data.title}</h1>
@@ -69,14 +69,16 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
           />
         </div>
       ))}
-      {postsPagination?.next_page ? (
+      {repository?.next_page ? (
         <button
           type="button"
           onClick={() => fetchMorePosts(postsPagination?.next_page)}
         >
           <h2>Carregar mais posts</h2>
         </button>
-      ) : null}
+      ) : (
+        ''
+      )}
     </main>
   );
 }
@@ -84,8 +86,6 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient({});
   const postsResponse = await prismic.getByType('post', { pageSize: 5 });
-  // eslint-disable-next-line no-console
-  console.log('postsResponse: ', JSON.stringify(postsResponse, null, 2));
 
   const posts = postsResponse.results.map(post => {
     return {
