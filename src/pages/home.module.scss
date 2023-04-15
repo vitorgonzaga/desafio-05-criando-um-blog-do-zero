@@ -8,16 +8,23 @@
 
 .post {
     h1 {
-        color: var(--white);
+        color: var(--gray-50);
         font-size: 28px;
         font-weight: 700;
         line-height: 34px;
         letter-spacing: -0.5px;
+
+        cursor: pointer;
+
+        transition: color 0.2s;
+
+        &:hover {
+            color: var(--pink-500);
+        }
     }
 
     p {
         margin-top: 8px;
-
         font-size: 18px;
         line-height: 22px;
     }
@@ -28,26 +35,5 @@
 
 }
 
-.info {
-    margin-top: 24px;
-    display: flex;
-    align-items: center;
 
-    time {
-        margin-left: 0.5rem;
-    }
-
-    span {
-        margin-left: 0.5rem;
-    }
-
-    div {
-        display: flex;
-        align-items: center;
-
-        time {
-            margin-right: 24px;
-        }
-    }
-}
 
