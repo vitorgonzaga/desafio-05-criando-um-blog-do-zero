@@ -1,10 +1,8 @@
-import { format } from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR';
 import { GetStaticProps } from 'next';
 import Link from 'next/link';
-import { FiCalendar, FiUser } from 'react-icons/fi';
 import { getPrismicClient } from '../services/prismic';
 
+import BasicInfo from '../components/BasicInfo';
 import styles from './home.module.scss';
 // import commonStyles from '../styles/common.module.scss';
 
@@ -35,24 +33,14 @@ export default function Home({ postsPagination }: HomeProps): JSX.Element {
     <main className={styles.contentContainer}>
       {postsPagination.results.map(post => (
         <div key={post.uid} className={styles.post}>
-          <Link href={`/posts/${post.uid}`}>
+          <Link href={`/post/${post.uid}`}>
             <h1>{post.data.title}</h1>
           </Link>
           <p>{post.data.subtitle}</p>
-          <div className={styles.info}>
-            <div>
-              <FiCalendar />
-              <time>
-                {format(new Date(post.first_publication_date), 'dd MMM yyyy', {
-                  locale: ptBR,
-                })}
-              </time>
-            </div>
-            <div>
-              <FiUser />
-              <span>{post.data.author}</span>
-            </div>
-          </div>
+          <BasicInfo
+            publicationDate={post.first_publication_date}
+            author={post.data.author}
+          />
         </div>
       ))}
     </main>
