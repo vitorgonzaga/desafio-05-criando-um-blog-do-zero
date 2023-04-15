@@ -49,7 +49,7 @@ export default function BasicInfo({
         {minutes ? (
           <div>
             <FiClock />
-            <span>{minutes}</span>
+            <span>{`${minutes} min`}</span>
           </div>
         ) : (
           ''
