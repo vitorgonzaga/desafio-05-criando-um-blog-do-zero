@@ -1,4 +1,5 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 import { RichText } from 'prismic-dom';
 import BasicInfo from '../../components/BasicInfo';
 import { getPrismicClient } from '../../services/prismic';
@@ -30,14 +31,16 @@ interface PostProps {
 export default function Post({ post }: PostProps): JSX.Element {
   console.log('Post -> post:', post);
 
+  const router = useRouter();
+
   const words = post.data.content.reduce((acc, curr) => {
     const headingWords = curr?.heading.split(' ').length;
     const bodyWords = RichText.asText(curr?.body).split(' ').length;
     return acc + headingWords + bodyWords;
   }, 0);
 
-  return (
-    <main className={styles.contentContainer}>
+  const renderPost = (): JSX.Element => {
+    return (
       <article className={styles.post}>
         <img src={`${post.data.banner.url}`} alt="banner" />
         <h1>{post.data.title}</h1>
@@ -54,6 +57,12 @@ export default function Post({ post }: PostProps): JSX.Element {
           }}
         />
       </article>
+    );
+  };
+
+  return (
+    <main className={styles.contentContainer}>
+      {router.isFallback ? <h2>Carregando...</h2> : renderPost()}
     </main>
   );
 }
@@ -66,7 +75,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     paths: [
       { params: { slug: posts.results[0].uid } },
       { params: { slug: posts.results[1].uid } },
-      { params: { slug: posts.results[2].uid } },
+      // { params: { slug: posts.results[2].uid } },
     ],
     fallback: true,
   };
@@ -102,5 +111,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       post,
     },
+    revalidate: 1,
   };
 };
