@@ -33,11 +33,15 @@ export default function Post({ post }: PostProps): JSX.Element {
 
   const router = useRouter();
 
-  const words = post.data.content.reduce((acc, curr) => {
-    const headingWords = curr?.heading.split(' ').length;
-    const bodyWords = RichText.asText(curr?.body).split(' ').length;
-    return acc + headingWords + bodyWords;
-  }, 0);
+  const words = Math.ceil(
+    post.data.content.reduce((acc, curr) => {
+      const headingWords = curr?.heading.split(' ').length;
+      const bodyWords = RichText.asText(curr?.body).split(' ').length;
+      return acc + headingWords + bodyWords;
+    }, 0) / 200
+  );
+
+  console.log('Post -> words:', words);
 
   const renderPost = (): JSX.Element => {
     return (
@@ -53,7 +57,7 @@ export default function Post({ post }: PostProps): JSX.Element {
           className={styles.postContent}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
-            __html: RichText.asHtml(post.data.content[0].body),
+            __html: RichText.asHtml(post.data.content),
           }}
         />
       </article>
@@ -98,12 +102,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         url: response.data.banner.url,
       },
       author: response.data.author,
-      content: [
-        {
-          heading: response.data.content[0].heading,
-          body: response.data.content[0].body,
-        },
-      ],
+      content: response.data.content,
+      // content: [
+      //   {
+      //     heading: response.data.content[0].heading,
+      //     body: response.data.content[0].body,
+      //   },
+      // ],
     },
   };
 
