@@ -30,50 +30,54 @@ interface PostProps {
 export default function Post({ post }: PostProps): JSX.Element {
   const router = useRouter();
 
-  const words = Math.ceil(
-    post?.data?.content?.reduce((acc, curr) => {
-      const headingWords = curr?.heading?.split(' ')?.length;
-      const bodyWords = RichText.asText(curr?.body)?.split(' ')?.length;
-      return acc + headingWords + bodyWords;
-    }, 0) / 200
-  );
+  const calculateMinutes = (): number => {
+    const minutesCalculated = post?.data?.content?.reduce((acc, curr) => {
+      const headingWords = curr?.heading?.split(' ');
+      const bodyWords = RichText.asText(curr?.body)?.split(' ');
+      return acc + headingWords?.length + bodyWords?.length;
+    }, 0);
 
-  const renderPost = (): JSX.Element => {
-    return (
+    return Math.ceil(minutesCalculated / 200);
+  };
+
+  if (router.isFallback) {
+    return <h2>Carregando...</h2>;
+  }
+
+  return (
+    <main className={styles.contentContainer}>
       <article className={styles.post}>
         <img src={`${post.data.banner.url}`} alt="banner" />
         <h1>{post.data.title}</h1>
         <BasicInfo
           publicationDate={post.first_publication_date}
           author={post.data.author}
-          minutes={words}
+          minutes={post.data.content ? calculateMinutes() : 0}
         />
-        <div
-          className={styles.postContent}
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{
-            __html: RichText.asHtml(post?.data?.content || 0),
-          }}
-        />
+        {post.data.content.map(item => (
+          <div key={item.heading} className={styles.postContent}>
+            <h3>{item?.heading}</h3>
+            <div
+              className={styles.postContent}
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{
+                __html: RichText.asHtml(item?.body),
+              }}
+            />
+          </div>
+        ))}
       </article>
-    );
-  };
-
-  return (
-    <main className={styles.contentContainer}>
-      {router.isFallback ? <h2>Carregando...</h2> : renderPost()}
     </main>
   );
 }
-
 export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient({});
   const posts = await prismic.getByType('post');
 
   return {
     paths: [
-      { params: { slug: posts.results[0].uid } },
-      { params: { slug: posts.results[1].uid } },
+      { params: { slug: String(posts.results[0].uid) } },
+      { params: { slug: String(posts.results[1].uid) } },
     ],
     fallback: true,
   };
@@ -94,7 +98,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         url: response.data.banner.url,
       },
       author: response.data.author,
-      content: [...response.data.content],
+      content: response.data.content,
     },
   };
 
